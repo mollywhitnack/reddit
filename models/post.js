@@ -34,11 +34,13 @@ exports.create = postObj => {
       postObj.text,
       0,
       function(err) {
-        if(err) {
-          reject(err);
-        } else {
-          resolve();
-        }
+        if(err) return reject(err);
+
+        db.get('select * from posts order by createdAt desc limit 1', function(err, post) {
+          if(err) return reject(err);
+
+          resolve(post);
+        });
       }
     )
   });
