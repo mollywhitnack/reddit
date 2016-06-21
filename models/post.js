@@ -7,7 +7,7 @@ const db = require('../config/db');
 const uuid = require('uuid');
 const moment = require('moment');
 
-db.run(`create table if not exists posts(
+db.query(`create table if not exists posts(
   id TEXT,
   createdAt TEXT,
   text TEXT,
@@ -16,7 +16,7 @@ db.run(`create table if not exists posts(
 
 exports.getAll = () => {
   return new Promise(function(resolve, reject) {
-    db.all('select * from posts', function(err, posts) {
+    db.query('select * from posts', function(err, posts) {
       if(err) {
         reject(err);
       } else {
@@ -28,18 +28,19 @@ exports.getAll = () => {
 
 exports.create = postObj => {
   return new Promise(function(resolve, reject) {
-    db.run('insert into posts values (?,?,?,?)',
-      uuid(),
-      moment().toISOString(),
-      postObj.text,
-      0,
+    postObj.id = uuid();
+    postObj.createdAt = moment().toIOString();
+    postObj.score() = 0
+
+    db.query('insert into posts set ?', postObj,
       function(err) {
         if(err) return reject(err);
 
-        db.get('select * from posts order by createdAt desc limit 1', function(err, post) {
+        db.query('select * from posts order by createdAt desc limit 1', function(err, post) {
           if(err) return reject(err);
+          console.log("post: ", post);
 
-          resolve(post);
+          resolve(post[0]);
         });
       }
     )
